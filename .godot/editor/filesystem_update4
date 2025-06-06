@@ -1,0 +1,5 @@
+res://scripts/Bash.cs
+res://scripts/Input.cs
+res://scripts/Terminal.cs
+res://terminal.tscn
+res://scripts/InputText.cs
