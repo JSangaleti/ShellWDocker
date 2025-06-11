@@ -21,7 +21,13 @@ public partial class InputText : TextEdit
             {
                 AcceptEvent();
 
-                //string command = GetLine(GetCaretLine()).Replace(prompt, "");
+                string command = GetLine(GetCaretLine()).Replace(prompt, "").Trim();
+                if (command != "")
+                {
+                    if (command == "clear")
+                        outputText.Text = "";
+                    outputText.AppendText(prompt + command + "\n" + bash.ExecuteCommand(command) + "\n");
+                }
 
                 Reset();
 
@@ -41,8 +47,6 @@ public partial class InputText : TextEdit
 
         if (column > prompt.Length)
             RemoveText(line, column - 1, line, column);
-        else
-            GD.Print(caretIndex);
     }
 
     public override void _Ready()
@@ -51,7 +55,6 @@ public partial class InputText : TextEdit
         outputText = (RichTextLabel)GetNode("../OutputText");
 
         Reset();
-        GD.Print("Tá tudo pronto");
     }
 
 
