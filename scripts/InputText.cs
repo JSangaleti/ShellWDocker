@@ -23,11 +23,9 @@ public partial class InputText : TextEdit
 
                 string command = GetLine(GetCaretLine()).Replace(prompt, "").Trim();
                 if (command != "")
-                {
-                    if (command == "clear")
-                        outputText.Text = "";
                     outputText.AppendText(prompt + command + "\n" + bash.ExecuteCommand(command) + "\n");
-                }
+                if (command == "clear")
+                    outputText.Text = "";
 
                 Reset();
 
@@ -51,7 +49,7 @@ public partial class InputText : TextEdit
 
     public override void _Ready()
     {
-        bash = new Bash("/home/unknowndev");
+        bash = new Bash("/home");
         outputText = (RichTextLabel)GetNode("../OutputText");
 
         Reset();

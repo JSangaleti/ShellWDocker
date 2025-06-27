@@ -5,7 +5,6 @@ using System.IO;
 public class Bash
 {
 
-    private System.Diagnostics.Process process;
     public string USR_DIR;
     public string CUR_DIR;
     //  Nomes das variáveis em caixa-alta para que se assemelhe
@@ -13,29 +12,18 @@ public class Bash
 
     public Bash(string USR_DIR)
     {
-        process = new System.Diagnostics.Process();
-        process.EnableRaisingEvents = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        // process.StartInfo.RedirectStandardError = true;
-        process.StartInfo.FileName = "/bin/bash";
-
         this.USR_DIR = USR_DIR;
         CUR_DIR = USR_DIR;
     }
 
-
-    private string Shell(string command)
+    private string[] ClearCommand(string command)
     /*
-    Função responsável por executar os comandos. Foi criada afim de simplificar 
-    as entradas e saídas para que, assim, possa ser melhor utilizada ao longo do código
+    Esta função deve realizar sanitização dos dados do campo de entrada de texto,
+    evitando que o jogador burle as regras do nosso controle de jogo
     */
     {
-        process.StartInfo.WorkingDirectory = CUR_DIR;
-        process.StartInfo.Arguments = " -c " + command;
-        process.Start();
-        process.WaitForExit();
-        string output = process.StandardOutput.ReadToEnd();
-        return output;
+        string[] vectorCommand = command.Split(" ");
+        return vectorCommand;
     }
 
     public string ExecuteCommand(string command)
@@ -44,18 +32,18 @@ public class Bash
     sejam executadas e da maneira esperada, mantendo controle sobre o usuário
     */
     {
-        string[] vectorCommand = command.Split(" ");
+        Docker docker = new Docker();
+        string[] vectorCommand = ClearCommand(command);
         switch (vectorCommand[0])
         {
+            case "whoami":
+                return docker.RunDockerCommand("whoami", "maquina", CUR_DIR);
             case "ls":
-                return Shell(command);
+                return docker.RunDockerCommand("ls", "maquina", CUR_DIR);
             case "pwd":
-                return Shell("pwd");
+                return CUR_DIR;
             case "echo":
-                // Por enquanto, o echo servirá como um simples print
-                // até que possa ser útil para adicionar informações
-                // em arquivos
-                return Shell(command);
+                return docker.RunDockerCommand("echo " + vectorCommand[1], "maquina", CUR_DIR);
             case "cd":
                 string targetDir;
 
@@ -80,7 +68,6 @@ public class Bash
                 if (Directory.Exists(newPath))
                 {
                     CUR_DIR = newPath;
-                    process.StartInfo.WorkingDirectory = CUR_DIR;
                     return "";
                 }
                 else

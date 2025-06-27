@@ -9,4 +9,10 @@ public partial class Terminal : Control
 		// GetTree().ChangeSceneToFile("res://scenes/computador.tscn");
 		// }
 	}
+
+	public override void _Ready()
+	{
+		Docker docker = new Docker();
+		docker.StartMachine("maquina");
+	}
 }
